@@ -8,11 +8,13 @@ using System.Windows.Markup;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Dragablz")]
 [assembly: AssemblyDescription("Dragable tabable")]
+#if !NET472
+[assembly: AssemblyTitle("Dragablz")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Mulholland Software Ltd/James Willock")]
 [assembly: AssemblyProduct("Dragablz")]
+#endif
 [assembly: AssemblyCopyright("Copyright © 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -58,7 +60,9 @@ using System.Windows.Markup;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
+#if !NET472
 [assembly: AssemblyVersion("0.0.0.0")]
 [assembly: AssemblyFileVersion("0.0.0.0")]
+#endif
 
 [assembly: InternalsVisibleTo("Dragablz.Test")]

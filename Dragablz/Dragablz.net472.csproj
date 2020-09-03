@@ -1,0 +1,27 @@
+<Project Sdk="MSBuild.Sdk.Extras/2.1.2">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+
+    <LangVersion>8</LangVersion>
+    <Nullable>enable</Nullable>
+
+    <DefineConstants>NET45;$(DefineConstants)</DefineConstants>
+
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TunnelVisionLabs.ReferenceAssemblyAnnotator" Version="1.0.0-alpha.160" PrivateAssets="all" />
+
+    <!-- Specifies the version of Microsoft.NETCore.App.Ref to obtain nullability information from. -->
+    <PackageDownload Include="Microsoft.NETCore.App.Ref" Version="[3.1.0]" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+    </Compile>
+  </ItemGroup>
+  
+</Project>
