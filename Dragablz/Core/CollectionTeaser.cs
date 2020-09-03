@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Dragablz.Core
@@ -16,7 +17,7 @@ namespace Dragablz.Core
             _removeMethod = removeMethod;
         }
 
-        public static bool TryCreate(object items, out CollectionTeaser collectionTeaser)
+        public static bool TryCreate(object items, [NotNullWhen(true)] out CollectionTeaser? collectionTeaser)
         {
             collectionTeaser = null;
 

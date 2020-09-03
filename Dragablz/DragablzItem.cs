@@ -32,10 +32,10 @@ namespace Dragablz
         private readonly SerialDisposable _templateSubscriptions = new SerialDisposable();
         private readonly SerialDisposable _rightMouseUpCleanUpDisposable = new SerialDisposable();
 
-        private Thumb _customThumb;
-        private Thumb _thumb;
+        private Thumb? _customThumb;
+        private Thumb? _thumb;
         private bool _seizeDragWithTemplate;
-        private Action<DragablzItem> _dragSeizedContinuation;
+        private Action<DragablzItem?>? _dragSeizedContinuation;
 
         static DragablzItem()
         {
@@ -297,7 +297,7 @@ namespace Dragablz
             remove { RemoveHandler(IsDraggingChangedEvent, value); }
         }
 
-        internal object UnderlyingContent { get; set; }
+        internal object? UnderlyingContent { get; set; }
 
         private static void OnIsDraggingChanged(
             DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -429,13 +429,13 @@ namespace Dragablz
 
         private static void IsCustomThumbPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            if (dependencyObject as Thumb == null) 
+            if (!(dependencyObject is Thumb thumb))
                 throw new ApplicationException("IsCustomThumb can only be applied to a thumb");
 
-            if ((dependencyObject as Thumb).IsLoaded)
-                ApplyCustomThumbSetting(dependencyObject as Thumb);
+            if (thumb.IsLoaded)
+                ApplyCustomThumbSetting(thumb);
             else
-                (dependencyObject as Thumb).Loaded += CustomThumbOnLoaded;
+                thumb.Loaded += CustomThumbOnLoaded;
         }        
 
         /// <summary>
@@ -508,7 +508,7 @@ namespace Dragablz
             Mouse.RemoveLostMouseCaptureHandler(this, LostMouseAfterSeizeHandler);
         }
 
-        internal void InstigateDrag(Action<DragablzItem> continuation)
+        internal void InstigateDrag(Action<DragablzItem?> continuation)
         {
             _dragSeizedContinuation = continuation;
             if (GetTemplateChild(ThumbPartName) is Thumb thumb)
@@ -521,7 +521,7 @@ namespace Dragablz
 
         internal Point MouseAtDragStart { get; set; }
 
-        internal string PartitionAtDragStart { get; set; }
+        internal string? PartitionAtDragStart { get; set; }
 
         internal bool IsDropTargetFound { get; set; }
 
@@ -586,7 +586,7 @@ namespace Dragablz
                         MouseButton.Left) { RoutedEvent = MouseLeftButtonDownEvent })));
         }
 
-        private Tuple<Thumb, IDisposable> SelectAndSubscribeToThumb()
+        private Tuple<Thumb?, IDisposable> SelectAndSubscribeToThumb()
         {
             var templateThumb = GetTemplateChild(ThumbPartName) as Thumb;
             templateThumb?.SetCurrentValue(IsHitTestVisibleProperty, _customThumb == null);
@@ -608,7 +608,7 @@ namespace Dragablz
                 tidyUpThumb.DragCompleted -= ThumbOnDragCompleted;
             });
 
-            return new Tuple<Thumb, IDisposable>(_thumb, disposable);
+            return new Tuple<Thumb?, IDisposable>(_thumb, disposable);
         }
     }
 }

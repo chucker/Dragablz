@@ -32,8 +32,8 @@ namespace Dragablz.Dockablz
         private const string FloatingDropZonePartName = "PART_FloatDropZone";
         private const string FloatingContentPresenterPartName = "PART_FloatContentPresenter";
     
-        private readonly IDictionary<DropZoneLocation, DropZone> _dropZones = new Dictionary<DropZoneLocation, DropZone>();
-        private static Tuple<Layout, DropZone> _currentlyOfferedDropZone;
+        private readonly IDictionary<DropZoneLocation, DropZone?> _dropZones = new Dictionary<DropZoneLocation, DropZone?>();
+        private static Tuple<Layout, DropZone>? _currentlyOfferedDropZone;
 
         public static RoutedCommand UnfloatItemCommand = new RoutedCommand();
         public static RoutedCommand MaximiseFloatingItem = new RoutedCommand();
@@ -45,7 +45,7 @@ namespace Dragablz.Dockablz
         
         private readonly DragablzItemsControl _floatingItems;
         private static bool _isDragOpWireUpPending;
-        private FloatTransfer _floatTransfer;
+        private FloatTransfer? _floatTransfer;
 
         static Layout()
         {
@@ -155,7 +155,7 @@ namespace Dragablz.Dockablz
         /// <param name="makeCurrentSecond">Set to <c>true</c> to make the current tab control push into the right hand or bottom of the split.</param>
         /// <param name="firstItemProportion">Sets the proportion of the first tab control, with 0.5 being 50% of available space.</param>
         /// <remarks>The tab control to be split must be hosted in a layout control. </remarks>
-        public static BranchResult Branch(TabablzControl tabablzControl, TabablzControl newSiblingTabablzControl, Orientation orientation, bool makeCurrentSecond,
+        public static BranchResult Branch(TabablzControl tabablzControl, TabablzControl? newSiblingTabablzControl, Orientation orientation, bool makeCurrentSecond,
             double firstItemProportion)
         {
             if (firstItemProportion < 0.0 || firstItemProportion > 1.0) throw new ArgumentOutOfRangeException("firstItemProportion", "Must be >= 0.0 and <= 1.0");
@@ -197,7 +197,7 @@ namespace Dragablz.Dockablz
         /// Use in conjuction with the <see cref="InterTabController.Partition"/> on a <see cref="TabablzControl"/>
         /// to isolate drag and drop spaces/control instances.
         /// </summary>
-        public string Partition { get; set; }
+        public string? Partition { get; set; }
 
         public static readonly DependencyProperty InterLayoutClientProperty = DependencyProperty.Register(
             "InterLayoutClient", typeof (IInterLayoutClient), typeof (Layout), new PropertyMetadata(new DefaultInterLayoutClient()));
@@ -462,7 +462,7 @@ namespace Dragablz.Dockablz
             var myWindow = Window.GetWindow(this);
             if (myWindow == null) return;
 
-            foreach (var dropZone in _dropZones.Values.Where(dz => dz != null))
+            foreach (var dropZone in _dropZones.Values.OfType<DropZone>())
             {                
                 var pointFromScreen = myWindow.PointFromScreen(cursorPos);
                 var pointRelativeToDropZone = myWindow.TranslatePoint(pointFromScreen, dropZone);
@@ -576,10 +576,10 @@ namespace Dragablz.Dockablz
             var grandParent = FindLayoutOrBranchOwner(ownerBranch, out isSecondLineageWhenOwnerIsBranch);
             if (grandParent == null) throw new ApplicationException("Unexpected structure, grandparent Layout or Branch not found");
 
-            if (grandParent as Layout != null)
+            if (grandParent is Layout layout)
             {
-                (grandParent as Layout).Content = survivingItem;
-                MarkTopLeftItem(grandParent as Layout);
+                layout.Content = survivingItem;
+                MarkTopLeftItem(layout);
                 return true;
             }
 
@@ -595,7 +595,7 @@ namespace Dragablz.Dockablz
             return true;
         }
 
-        private static object FindLayoutOrBranchOwner(DependencyObject node, out bool isSecondLineageWhenOwnerIsBranch)
+        private static object? FindLayoutOrBranchOwner(DependencyObject node, out bool isSecondLineageWhenOwnerIsBranch)
         {
             isSecondLineageWhenOwnerIsBranch = false;
             
@@ -617,7 +617,7 @@ namespace Dragablz.Dockablz
             return null;
         }
 
-        private static BranchResult Branch(Orientation orientation, double proportion, bool makeSecond, DataTemplate branchTemplate, TabablzControl newSibling, object existingContent, Action<Branch> applier)
+        private static BranchResult Branch(Orientation orientation, double proportion, bool makeSecond, DataTemplate branchTemplate, TabablzControl? newSibling, object existingContent, Action<Branch> applier)
         {
             var branchItem = new Branch
             {
@@ -699,7 +699,7 @@ namespace Dragablz.Dockablz
             sourceTabControl.RemoveItem(dragablzItem);
 
             //add to float layer            
-            if (CollectionTeaser.TryCreate(layout.FloatingItemsSource, out CollectionTeaser collectionTeaser))
+            if (CollectionTeaser.TryCreate(layout.FloatingItemsSource, out CollectionTeaser? collectionTeaser))
                 collectionTeaser.Add(layout._floatTransfer.Content);
             else
                 layout.FloatingItems.Add(layout._floatTransfer.Content);
@@ -863,7 +863,7 @@ namespace Dragablz.Dockablz
 
             var item = _floatingItems.ItemContainerGenerator.ItemFromContainer(dragablzItem);
 
-            if (CollectionTeaser.TryCreate(_floatingItems.ItemsSource, out CollectionTeaser collectionTeaser))
+            if (CollectionTeaser.TryCreate(_floatingItems.ItemsSource, out CollectionTeaser? collectionTeaser))
                 collectionTeaser.Remove(item);
             else
                 _floatingItems.Items.Remove(item);
@@ -946,7 +946,7 @@ namespace Dragablz.Dockablz
             var content = dragablzItem.Content ?? dragablzItem;
 
             //remove from source
-            if (CollectionTeaser.TryCreate(FloatingItemsSource, out CollectionTeaser collectionTeaser))
+            if (CollectionTeaser.TryCreate(FloatingItemsSource, out CollectionTeaser? collectionTeaser))
                 collectionTeaser.Remove(content);
             else
                 FloatingItems.Remove(content);

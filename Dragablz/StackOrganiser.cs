@@ -138,7 +138,7 @@ namespace Dragablz
 
         }
 
-        private IDictionary<DragablzItem, LocationInfo> _siblingItemLocationOnDragStart;
+        private IDictionary<DragablzItem, LocationInfo>? _siblingItemLocationOnDragStart;
 
         public virtual void OrganiseOnDragStarted(DragablzItemsControl requestor, Size measureBounds,
             IEnumerable<DragablzItem> siblingItems, DragablzItem dragItem)
