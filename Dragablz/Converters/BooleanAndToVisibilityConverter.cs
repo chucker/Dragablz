@@ -25,9 +25,9 @@ namespace Dragablz.Converters
 
         private static bool GetBool(object value)
         {
-            if (value is bool)
+            if (value is bool b)
             {
-                return (bool)value;
+                return b;
             }
             
             return false;

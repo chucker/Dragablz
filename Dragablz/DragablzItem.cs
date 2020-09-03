@@ -429,13 +429,13 @@ namespace Dragablz
 
         private static void IsCustomThumbPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            var thumb = dependencyObject as Thumb;
-            if (thumb == null) throw new ApplicationException("IsCustomThumb can only be applied to a thumb");
+            if (dependencyObject as Thumb == null) 
+                throw new ApplicationException("IsCustomThumb can only be applied to a thumb");
 
-            if (thumb.IsLoaded)
-                ApplyCustomThumbSetting(thumb);
+            if ((dependencyObject as Thumb).IsLoaded)
+                ApplyCustomThumbSetting(dependencyObject as Thumb);
             else
-                thumb.Loaded += CustomThumbOnLoaded;
+                (dependencyObject as Thumb).Loaded += CustomThumbOnLoaded;
         }        
 
         /// <summary>
@@ -467,8 +467,7 @@ namespace Dragablz
             {
                 _isTemplateThumbWithMouseAfterSeize = true;
                 Mouse.AddLostMouseCaptureHandler(this, LostMouseAfterSeizeHandler);
-                if (_dragSeizedContinuation != null)
-                    _dragSeizedContinuation(this);
+                _dragSeizedContinuation?.Invoke(this);
                 _dragSeizedContinuation = null;
 
                 Dispatcher.BeginInvoke(new Action(() => thumbAndSubscription.Item1.RaiseEvent(new MouseButtonEventArgs(InputManager.Current.PrimaryMouseDevice,
@@ -512,10 +511,9 @@ namespace Dragablz
         internal void InstigateDrag(Action<DragablzItem> continuation)
         {
             _dragSeizedContinuation = continuation;
-            var thumb = GetTemplateChild(ThumbPartName) as Thumb;
-            if (thumb != null)
+            if (GetTemplateChild(ThumbPartName) is Thumb thumb)
             {
-                thumb.CaptureMouse();             
+                thumb.CaptureMouse();
             }
             else
                 _seizeDragWithTemplate = true;

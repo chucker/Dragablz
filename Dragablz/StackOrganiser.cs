@@ -263,15 +263,14 @@ namespace Dragablz
         }
         
         private void SendToLocation(DragablzItem dragablzItem, double location)
-        {                        
-            double activeTarget;
+        {
             if (Math.Abs(_getLocation(dragablzItem) - location) < 1.0
                 ||
-                _activeStoryboardTargetLocations.TryGetValue(dragablzItem, out activeTarget)
+                _activeStoryboardTargetLocations.TryGetValue(dragablzItem, out double activeTarget)
                 && Math.Abs(activeTarget - location) < 1.0)
-            {             
+            {
                 return;
-            }            
+            }
 
             _activeStoryboardTargetLocations[dragablzItem] = location;
 
@@ -297,8 +296,7 @@ namespace Dragablz
         private LocationInfo GetLocationInfo(DragablzItem item)
         {
             var size = _getDesiredSize(item);
-            double startLocation;
-            if (!_activeStoryboardTargetLocations.TryGetValue(item, out startLocation))
+            if (!_activeStoryboardTargetLocations.TryGetValue(item, out double startLocation))
                 startLocation = _getLocation(item);
             var midLocation = startLocation + size / 2;
             var endLocation = startLocation + size;
